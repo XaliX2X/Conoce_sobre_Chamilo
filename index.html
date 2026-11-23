@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chamilo LMS | Libertad de código o comodidad de la nube</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #14305c;
+    --blue: #3d6aa8;
+    --sky: #bcd4f5;
+    --orange: #ff7a1a;
+    --bg: #fdfdff;
+    --blob: #e3edfc;
+    --card: #ffffff;
+    --ink: #14305c;
+    --text: #3d4b69;
+    --muted: #66738d;
+    --line: #dbe4f3;
+    --ok: #1f9d6b;
+    --bad: #d6453d;
+    --shadow: 0 10px 30px rgba(20, 48, 92, .10);
+    --titulo: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+    --font: "Quicksand", "Segoe UI", system-ui, sans-serif;
+  }
+  [data-theme="dark"] {
+    --bg: #0d1a30;
+    --blob: #16294b;
+    --card: #152743;
+    --ink: #eef3fc;
+    --text: #c3cee3;
+    --muted: #93a3c2;
+    --line: #2a3f66;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+  body {
+    font-family: var(--font);
+    font-weight: 500;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    transition: background .3s, color .3s;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+
+  /* ===== Menú ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 5vw;
+    transition: background .3s, box-shadow .3s, padding .3s;
+  }
+  nav.scrolled { background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); box-shadow: 0 4px 20px rgba(20, 48, 92, .12); padding-top: .6rem; padding-bottom: .6rem; }
+  .brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; color: var(--ink); font-family: var(--titulo); font-weight: 700; font-size: 2.1rem; margin-right: auto; }
+  .brand img { height: 52px; width: auto; }
+  nav ul { display: flex; gap: 1.3rem; list-style: none; }
+  nav ul a {
+    display: block; text-decoration: none; color: var(--ink); font-weight: 600; font-size: 1rem;
+    padding: .4rem .2rem; border-bottom: 3px solid transparent; transition: border-color .2s;
+  }
+  nav ul a:hover { border-color: color-mix(in srgb, var(--orange) 50%, transparent); }
+  nav ul a.activo { font-weight: 700; border-color: var(--orange); }
+  #tema, #burger {
+    width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 1.1rem;
+    background: var(--card); color: var(--ink); border: 2px solid var(--line);
+  }
+  #burger { display: none; }
+
+  /* ===== Portada ===== */
+  header.hero {
+    position: relative; min-height: 100vh;
+    padding: 8rem 5vw 14rem;
+    display: flex; align-items: center;
+    overflow: hidden;
+  }
+  .blob { position: absolute; z-index: 0; }
+  .blob.arriba-der { right: -120px; top: -140px; width: 420px; height: 420px; border-radius: 50%; background: var(--sky); }
+  .blob.arriba-der::after { content: ""; position: absolute; right: 40px; top: 60px; width: 230px; height: 230px; border-radius: 50%; background: var(--blue); }
+  .blob.arriba-izq { left: -70px; top: -70px; width: 140px; height: 140px; border-radius: 50%; background: var(--navy); }
+  .blob.fondo-laptop { width: 640px; height: 520px; right: -60px; top: 150px; background: var(--blob); border-radius: 58% 42% 50% 50% / 52% 48% 52% 48%; }
+  .blob.circulo { width: 70px; height: 70px; right: 38%; top: 200px; border-radius: 50%; background: var(--blob); }
+  .hero-in {
+    position: relative; z-index: 1;
+    max-width: 1300px; width: 100%; margin: 0 auto;
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: center;
+  }
+  .titulo-wrap { position: relative; display: inline-block; }
+  .punto { position: absolute; left: -26px; top: -6px; width: 34px; height: 34px; border-radius: 50%; background: var(--orange); }
+  .chispas { position: absolute; width: 70px; height: 70px; pointer-events: none; }
+  .chispas i { position: absolute; width: 6px; height: 28px; background: var(--orange); border-radius: 9px; }
+  .chispas.t { right: -66px; top: -22px; }
+  .chispas.t i:nth-child(1) { left: 6px; top: 0; transform: rotate(-18deg); }
+  .chispas.t i:nth-child(2) { left: 34px; top: 16px; transform: rotate(52deg); height: 24px; }
+  .chispas.t i:nth-child(3) { left: 44px; top: 44px; transform: rotate(84deg); height: 22px; }
+  .hero h1 { font-family: var(--titulo); font-size: clamp(4rem, 10vw, 8.4rem); font-weight: 700; line-height: 1; letter-spacing: -.01em; color: var(--ink); }
+  .hero h2.sub { margin-top: 1rem; font-size: clamp(1.4rem, 2.8vw, 2.3rem); font-weight: 500; color: var(--ink); line-height: 1.25; }
+  .hero h2.sub b { color: var(--orange); font-weight: 700; }
+  .hero .barra { width: 85px; height: 6px; background: var(--orange); border-radius: 99px; margin: 1.5rem 0; }
+  .hero p.desc { font-size: 1.3rem; max-width: 30ch; color: var(--text); line-height: 1.45; }
+
+  /* Pregunta guía dentro de la portada */
+  .guia-hero {
+    margin-top: 1.8rem; max-width: 560px;
+    background: var(--card); border-radius: 24px; padding: 1.2rem 1.5rem 1.3rem;
+    box-shadow: var(--shadow); border-left: 7px solid var(--orange);
+  }
+  .g-et { display: inline-block; background: var(--orange); color: #fff; font-family: var(--titulo); font-weight: 600; font-size: .85rem; padding: .15rem .9rem; border-radius: 999px; }
+  .g-t { font-family: var(--titulo); font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 600; line-height: 1.2; color: var(--ink); margin: .55rem 0 .4rem; }
+  .g-txt { font-size: .98rem; font-weight: 600; color: var(--muted); line-height: 1.45; }
+  .g-duelo { display: flex; align-items: center; flex-wrap: wrap; gap: .7rem; margin-top: .9rem; }
+  .g-op { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--titulo); font-weight: 600; font-size: 1.02rem; color: var(--ink); padding: .4rem 1rem .4rem .7rem; border-radius: 999px; background: color-mix(in srgb, var(--blue) 12%, var(--card)); border-bottom: 4px solid var(--blue); }
+  .g-op.nube { background: color-mix(in srgb, var(--orange) 12%, var(--card)); border-bottom-color: var(--orange); }
+  .g-op svg { width: 28px; height: 28px; }
+  .g-duelo .o { font-family: var(--titulo); font-size: 1.3rem; font-weight: 700; color: var(--orange); }
+
+  .btn-hero {
+    display: inline-flex; align-items: center; gap: 1.2rem; margin-top: 2.2rem;
+    background: var(--navy); color: #fff; text-decoration: none; font-family: var(--titulo); font-weight: 600; font-size: 1.4rem;
+    padding: .7rem .7rem .7rem 2rem; border-radius: 999px;
+    box-shadow: 5px 6px 0 var(--orange); transition: transform .2s, box-shadow .2s;
+  }
+  .btn-hero:hover { transform: translate(-2px, -2px); box-shadow: 7px 8px 0 var(--orange); }
+  .btn-hero .flecha { width: 48px; height: 48px; border-radius: 50%; background: #fff; color: var(--navy); display: grid; place-items: center; font-size: 1.6rem; line-height: 1; }
+
+  /* Laptop hecha con CSS */
+  .laptop-zona { position: relative; display: grid; place-items: center; min-height: 400px; perspective: 1400px; }
+  .laptop { position: relative; width: min(600px, 100%); transform: rotateY(-14deg) rotateX(3deg) rotate(-1.5deg); transform-style: preserve-3d; filter: drop-shadow(0 28px 28px rgba(20, 48, 92, .28)); }
+  .pantalla { background: #0b0f1a; border-radius: 14px 14px 4px 4px; padding: 12px 12px 16px; aspect-ratio: 16 / 10.6; }
+  .pantalla .vidrio { width: 100%; height: 100%; background: #fff; border-radius: 3px; display: grid; place-items: center; padding: 5%; }
+  .pantalla img { max-width: 72%; max-height: 100%; height: auto; object-fit: contain; }
+  .base {
+    position: relative; height: 24px; margin: 0 -8%;
+    background: linear-gradient(#d3d8e0, #959ca8);
+    clip-path: polygon(0 0, 100% 0, 96% 100%, 4% 100%);
+    border-radius: 0 0 20px 20px;
+  }
+  .base::after { content: ""; position: absolute; left: 41%; right: 41%; top: 0; height: 7px; background: #b0b6c1; border-radius: 0 0 10px 10px; }
+  .chispas.l { right: -8px; top: -34px; }
+  .chispas.l i:nth-child(1) { left: 6px; top: 2px; transform: rotate(-20deg); }
+  .chispas.l i:nth-child(2) { left: 32px; top: 18px; transform: rotate(52deg); height: 24px; }
+  .chispas.l i:nth-child(3) { left: 40px; top: 44px; transform: rotate(84deg); height: 20px; }
+
+  /* Olas inferiores */
+  .ola { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 230px; display: block; z-index: 1; }
+
+  /* Franja azul con datos rápidos (parte de la portada) */
+  .franja { background: var(--navy); color: #fff; padding: .5rem 5vw 3.5rem; margin-top: -1px; }
+  .franja ul { max-width: 1100px; margin: 0 auto; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.5rem; text-align: center; }
+  .franja strong { display: block; font-family: var(--titulo); font-size: 1.7rem; font-weight: 600; color: var(--orange); }
+  .franja span { font-size: 1rem; opacity: .9; }
+
+  /* ===== Secciones ===== */
+  section { padding: 5.5rem 5vw; }
+  section.alt { background: color-mix(in srgb, var(--blob) 55%, var(--bg)); }
+  .wrap { max-width: 1050px; margin: 0 auto; }
+  h2.titulo { font-family: var(--titulo); font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 600; line-height: 1.15; color: var(--ink); }
+  h2.titulo::after { content: ""; display: block; width: 70px; height: 6px; background: var(--orange); border-radius: 99px; margin: .9rem 0 1.6rem; }
+  p.lead { font-size: 1.15rem; max-width: 70ch; font-weight: 600; }
+  p.lead + p.lead { margin-top: 1rem; }
+  .cita { color: var(--muted); font-weight: 600; }
+  .sub-t { font-family: var(--titulo); font-size: 1.4rem; font-weight: 600; color: var(--ink); margin: 2.2rem 0 .2rem; }
+  .btn-link {
+    display: inline-block; margin-top: 1.6rem; text-decoration: none; background: var(--navy); color: #fff;
+    font-family: var(--titulo); font-weight: 600; font-size: 1.1rem; padding: .7rem 1.8rem; border-radius: 999px;
+    box-shadow: 4px 5px 0 var(--orange); transition: transform .2s, box-shadow .2s;
+  }
+  .btn-link:hover { transform: translate(-2px, -2px); box-shadow: 6px 7px 0 var(--orange); }
+  .ficha { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.1rem; margin-top: 2rem; }
+  .ficha div { background: var(--card); border-radius: 20px; padding: 1.2rem 1.4rem; box-shadow: var(--shadow); border-top: 5px solid var(--blue); }
+  .ficha b { display: block; font-size: .9rem; color: var(--muted); font-weight: 600; }
+  .ficha span { font-family: var(--titulo); font-size: 1.15rem; font-weight: 500; color: var(--ink); }
+
+  /* Tarjetas */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.3rem; margin-top: 2rem; }
+  .card {
+    text-align: left; font: inherit; color: inherit;
+    background: var(--card); border: 2px solid transparent; border-radius: 24px;
+    padding: 1.6rem; display: flex; flex-direction: column; gap: .5rem;
+    box-shadow: var(--shadow); transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: var(--orange); transform: translateY(-4px); }
+  .ic { width: 54px; height: 54px; color: var(--ink); margin-bottom: .2rem; }
+  .card h3 { font-family: var(--titulo); font-size: 1.25rem; font-weight: 600; color: var(--ink); }
+  .card p { font-size: 1rem; color: var(--muted); }
+
+  /* Licencia destacada */
+  .gpl { background: var(--navy); color: #e6edfa; border-radius: 26px; padding: 2rem 2.2rem; margin-top: 2rem; box-shadow: 6px 7px 0 var(--orange); }
+  .gpl strong { display: block; font-family: var(--titulo); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 600; color: #fff; line-height: 1.1; }
+  .gpl span { display: block; margin-top: .5rem; font-weight: 600; max-width: 62ch; }
+
+  /* ===== Tablas animadas ===== */
+  .tabla-wrap { margin-top: 2rem; overflow-x: auto; padding: 4px 6px 12px; }
+  table.tabla { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+  .tabla th {
+    font-family: var(--titulo); font-weight: 600; font-size: 1.15rem; text-align: left;
+    padding: 1rem 1.5rem; background: var(--navy); color: #fff; position: relative;
+  }
+  .tabla th:first-child { border-radius: 18px 0 0 18px; }
+  .tabla th:last-child { border-radius: 0 18px 18px 0; }
+  .tabla th::after { content: ""; position: absolute; left: 1.5rem; bottom: 8px; height: 3px; width: 0; background: var(--orange); border-radius: 9px; transition: width .8s ease .5s; }
+  .tabla.vis th::after { width: 44px; }
+  .tabla td {
+    background: var(--card); padding: 1.05rem 1.5rem; vertical-align: middle;
+    box-shadow: 0 6px 18px rgba(20, 48, 92, .07);
+    transition: background .25s, box-shadow .25s;
+  }
+  .tabla td:first-child { border-radius: 18px 0 0 18px; position: relative; padding-left: 3.2rem; font-family: var(--titulo); font-weight: 600; color: var(--ink); width: 32%; }
+  .tabla td:last-child { border-radius: 0 18px 18px 0; }
+  .tabla td:first-child::before {
+    content: ""; position: absolute; left: 1.4rem; top: 50%; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--sky); transform: translateY(-50%); transition: background .25s, transform .25s;
+  }
+  .tabla tbody tr { transition: transform .25s; }
+  .tabla tbody tr:hover { transform: translateX(8px); }
+  .tabla tbody tr:hover td { background: color-mix(in srgb, var(--orange) 9%, var(--card)); }
+  .tabla tbody tr:hover td:first-child { box-shadow: inset 6px 0 0 var(--orange), 0 6px 18px rgba(20, 48, 92, .07); }
+  .tabla tbody tr:hover td:first-child::before { background: var(--orange); transform: translateY(-50%) scale(1.5); }
+
+  /* Imágenes en la tabla de características */
+  .tabla:not(.pc) td:first-child { padding-left: 5.4rem; }
+  .tabla:not(.pc) td:first-child::before { left: 2.2rem; }
+  .tabla td.con-img::before { display: none; }
+  .ti { position: absolute; left: .9rem; top: 50%; width: 54px; height: 54px; object-fit: contain; transform: translateY(-50%); transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+  .tabla tbody tr:hover .ti { transform: translateY(-50%) scale(1.2) rotate(-7deg); }
+
+  /* Ventajas y desventajas: tarjetas pareadas */
+  .tabla.pc { border-spacing: 14px 12px; margin: -12px -14px; width: calc(100% + 28px); }
+  .tabla.pc th, .tabla.pc td { border-radius: 18px; }
+  .tabla.pc th:first-child { background: var(--ok); }
+  .tabla.pc th:last-child { background: var(--bad); }
+  .tabla.pc th::after { background: #fff; }
+  .tabla.pc td { width: 50%; position: relative; padding-left: 3.6rem; font-family: var(--font); font-weight: 600; color: var(--text); }
+  .tabla.pc td:first-child { font-family: var(--font); font-weight: 600; color: var(--text); width: 50%; }
+  .tabla.pc td::before, .tabla.pc td:first-child::before {
+    content: "\2713"; position: absolute; left: 1.2rem; top: 50%; width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center; font-size: .95rem; font-weight: 700; line-height: 1;
+    background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok);
+    transform: translateY(-50%); transition: transform .3s, background .3s, color .3s;
+  }
+  .tabla.pc td:last-child::before { content: "\2715"; background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
+  .tabla.pc tbody tr:hover { transform: translateY(-3px); }
+  .tabla.pc tbody tr:hover td:first-child { background: color-mix(in srgb, var(--ok) 11%, var(--card)); box-shadow: 0 8px 20px rgba(20, 48, 92, .10); }
+  .tabla.pc tbody tr:hover td:last-child { background: color-mix(in srgb, var(--bad) 10%, var(--card)); box-shadow: 0 8px 20px rgba(20, 48, 92, .10); }
+  .tabla.pc tbody tr:hover td:first-child::before { background: var(--ok); color: #fff; transform: translateY(-50%) scale(1.2) rotate(360deg); }
+  .tabla.pc tbody tr:hover td:last-child::before { background: var(--bad); color: #fff; transform: translateY(-50%) scale(1.2) rotate(360deg); }
+  .et { display: none; }
+
+  /* Entrada de las filas al llegar a la tabla */
+  .reveal tbody tr { opacity: 0; }
+  .reveal.vis tbody tr { opacity: 1; animation: entra .65s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--i) * 90ms); }
+  .reveal.pc tbody tr { opacity: 1; }
+  .reveal.pc.vis tbody tr { animation: none; }
+  .reveal.pc td { opacity: 0; }
+  .reveal.pc.vis td { opacity: 1; animation: entraIzq .65s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--i) * 110ms); }
+  .reveal.pc.vis td:last-child { animation-name: entraDer; }
+  @keyframes entra { from { opacity: 0; transform: translateX(-60px); } }
+  @keyframes entraIzq { from { opacity: 0; transform: translateX(-70px); } }
+  @keyframes entraDer { from { opacity: 0; transform: translateX(70px); } }
+
+  /* Estudio de caso */
+  .caso { background: var(--navy); color: #e6edfa; border-radius: 26px; padding: 2rem; margin: 1rem 0 2.2rem; box-shadow: 6px 7px 0 var(--orange); }
+  .caso h3 { font-family: var(--titulo); color: #fff; font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 600; line-height: 1.25; }
+  .caso .etiqueta { display: inline-block; background: var(--orange); color: #fff; font-family: var(--titulo); font-weight: 600; font-size: .9rem; padding: .25rem 1rem; border-radius: 999px; margin-bottom: .9rem; }
+  .linea { position: relative; margin-top: 2.8rem; padding-left: 4.5rem; --p: 0; }
+  .linea::before { content: ""; position: absolute; left: 24px; top: 10px; bottom: 10px; width: 6px; border-radius: 9px; background: var(--line); }
+  .linea::after { content: ""; position: absolute; left: 24px; top: 10px; width: 6px; border-radius: 9px; background: var(--orange); height: calc((100% - 20px) * var(--p)); transition: height .15s linear; }
+  .bloque { position: relative; margin-bottom: 1.6rem; }
+  .num {
+    position: absolute; left: -4.5rem; top: .7rem; z-index: 1; width: 54px; height: 54px; border-radius: 50%;
+    display: grid; place-items: center; font-family: var(--titulo); font-weight: 700; font-size: 1.4rem;
+    background: var(--card); border: 4px solid var(--line); color: var(--muted);
+    transition: background .4s, color .4s, border-color .4s;
+  }
+  .bloque.vis .num { background: var(--navy); border-color: var(--orange); color: #fff; animation: pop .6s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+  .bcard { background: var(--card); border-radius: 24px; padding: 1.6rem 1.8rem; box-shadow: var(--shadow); opacity: 0; }
+  .bloque.vis .bcard { opacity: 1; animation: bEntra .7s cubic-bezier(.2, .8, .2, 1) backwards; }
+  .bcard .bl { display: block; font-family: var(--titulo); font-size: .95rem; font-weight: 600; color: var(--orange); }
+  .bcard h3 { font-family: var(--titulo); font-size: 1.45rem; font-weight: 600; color: var(--ink); margin-bottom: .5rem; }
+  .bcard > p { font-weight: 600; }
+  .pregunta { position: relative; overflow: hidden; margin-top: 1.2rem; padding: 1rem 1.2rem 1rem 1.6rem; border-radius: 16px; background: color-mix(in srgb, var(--orange) 11%, var(--card)); }
+  .pregunta::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--orange); transform-origin: top; }
+  .bloque.vis .pregunta::before { animation: barra .8s ease .4s backwards; }
+  .pregunta b { display: block; font-family: var(--titulo); font-size: 1rem; font-weight: 600; color: var(--orange); }
+  .pregunta p { font-weight: 700; color: var(--ink); }
+  .pregunta.grande p { font-size: 1.2rem; }
+  @keyframes pop { from { transform: scale(0); } }
+  @keyframes bEntra { from { opacity: 0; transform: translateX(50px); } }
+  @keyframes barra { from { transform: scaleY(0); } }
+
+  /* Referencias */
+  .refs li { margin: 0 0 1rem 1.4rem; padding-left: .4rem; }
+  footer { background: var(--navy); color: #a9bad9; text-align: center; padding: 2rem 1rem; font-size: .95rem; }
+
+  @media (max-width: 1100px) {
+    nav ul { gap: .9rem; }
+    nav ul a { font-size: .92rem; }
+  }
+  @media (max-width: 960px) {
+    nav ul {
+      display: none; position: absolute; top: 100%; left: 4vw; right: 4vw;
+      flex-direction: column; gap: .2rem; padding: .8rem 1.2rem;
+      background: var(--card); border-radius: 20px; box-shadow: var(--shadow);
+    }
+    nav ul.abierto { display: flex; }
+    #burger { display: block; }
+    .brand { font-size: 1.7rem; }
+    .brand img { height: 42px; }
+    header.hero { padding: 7rem 6vw 11rem; }
+    .hero-in { grid-template-columns: 1fr; }
+    .laptop-zona { margin-top: 1.5rem; }
+    .blob.fondo-laptop { width: 420px; height: 360px; top: auto; bottom: 120px; }
+    .punto { left: -12px; width: 24px; height: 24px; }
+    .chispas.t { display: none; }
+    section { padding: 4rem 6vw; }
+    .ola { height: 140px; }
+  }
+  @media (max-width: 700px) {
+    .tabla, .tabla tbody, .tabla tr, .tabla td { display: block; width: 100%; }
+    .tabla thead { display: none; }
+    table.tabla, .tabla.pc { border-spacing: 0; margin: 0; width: 100%; }
+    .tabla tr { margin-bottom: 14px; }
+    .tabla td:first-child { width: 100%; border-radius: 18px 18px 0 0; }
+    .tabla td:last-child { border-radius: 0 0 18px 18px; }
+    .tabla tbody tr:hover { transform: none; }
+    .tabla.pc td, .tabla.pc td:first-child { width: 100%; margin-bottom: 8px; border-radius: 18px; }
+    .tabla.pc tr { margin-bottom: 18px; }
+    .et { display: block; font-family: var(--titulo); font-size: .85rem; font-weight: 600; opacity: .75; }
+    .tabla.pc td:first-child .et { color: var(--ok); }
+    .tabla.pc td:last-child .et { color: var(--bad); }
+    .linea { padding-left: 3.2rem; }
+    .linea::before, .linea::after { left: 17px; }
+    .num { left: -3.2rem; width: 40px; height: 40px; font-size: 1.1rem; border-width: 3px; }
+    .bcard { padding: 1.3rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+    .reveal tbody tr, .reveal.pc td, .bcard { opacity: 1 !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Iconos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-escuela" viewBox="0 0 48 48"><path d="M6 42V20L24 8l18 12v22z"/><path d="M19 42V31h10v11"/><circle cx="24" cy="21" r="3" style="stroke:#ff7a1a"/></symbol>
+  <symbol id="i-univ" viewBox="0 0 48 48"><path d="M4 18L24 7l20 11z"/><path d="M10 22v16M20 22v16M28 22v16M38 22v16M5 42h38" /><path d="M20 22v16" style="stroke:#ff7a1a"/></symbol>
+  <symbol id="i-virtual" viewBox="0 0 48 48"><rect x="4" y="7" width="40" height="27" rx="4"/><path d="M16 42h16M24 34v8"/><path d="M20 14l11 6.5L20 27z" style="stroke:#ff7a1a"/></symbol>
+  <symbol id="i-maletin" viewBox="0 0 48 48"><rect x="5" y="14" width="38" height="26" rx="4"/><path d="M17 14v-4a2 2 0 012-2h10a2 2 0 012 2v4"/><path d="M5 26h38"/><path d="M21 26v5h6v-5" style="stroke:#ff7a1a"/></symbol>
+  <symbol id="i-regalo" viewBox="0 0 48 48"><rect x="5" y="17" width="38" height="9" rx="2"/><path d="M9 26v16h30V26"/><path d="M24 17v25" style="stroke:#ff7a1a"/><path d="M24 17c-4-9-13-8-11-3s8 3 11 3zM24 17c4-9 13-8 11-3s-8 3-11 3z"/></symbol>
+  <symbol id="i-codigo" viewBox="0 0 48 48"><path d="M16 13L5 24l11 11M32 13l11 11-11 11"/><path d="M28 8l-8 32" style="stroke:#ff7a1a"/></symbol>
+  <symbol id="i-nube" viewBox="0 0 48 48"><path d="M14 38a9 9 0 01-1-18 12 12 0 0123 3 8 8 0 01-2 15z"/><path d="M24 33V22M19 27l5-5 5 5" style="stroke:#ff7a1a"/></symbol>
+</svg>
+
+<nav id="barra">
+  <a class="brand" href="#inicio"><img src="logochamilo.png" alt="" onerror="this.style.display='none'">Chamilo</a>
+  <ul id="menu">
+    <li><a href="#inicio" class="activo">Inicio</a></li>
+    <li><a href="#que-es">¿Qué es?</a></li>
+    <li><a href="#tipo">Tipo</a></li>
+    <li><a href="#licencia">Licencia</a></li>
+    <li><a href="#funciones">Funciones</a></li>
+    <li><a href="#pros-contras">Ventajas</a></li>
+    <li><a href="#caso">Caso</a></li>
+    <li><a href="#referencias">Referencias</a></li>
+  </ul>
+  <button id="tema" type="button" aria-label="Cambiar entre modo claro y oscuro">🌙</button>
+  <button id="burger" type="button" aria-label="Abrir menú">☰</button>
+</nav>
+
+<!-- ===== PORTADA: título + pregunta guía + datos rápidos ===== -->
+<header class="hero" id="inicio">
+  <div class="blob arriba-der"></div>
+  <div class="blob arriba-izq"></div>
+  <div class="blob fondo-laptop"></div>
+  <div class="blob circulo"></div>
+  <div class="hero-in">
+    <div>
+      <div class="titulo-wrap">
+        <span class="punto" aria-hidden="true"></span>
+        <h1>Chamilo</h1>
+        <span class="chispas t" aria-hidden="true"><i></i><i></i><i></i></span>
+      </div>
+      <h2 class="sub">Tu plataforma de <b>aprendizaje</b> en línea</h2>
+      <div class="barra"></div>
+      <p class="desc">Un LMS flexible y de código abierto para crear cursos y compartir conocimiento.</p>
+
+      <div class="guia-hero">
+        <span class="g-et">Pregunta guía</span>
+        <h2 class="g-t">¿Libertad de código o comodidad de la nube?</h2>
+        <p class="g-txt">Se descarga y usa sin pagar licencia, pero ponerlo a funcionar puede implicar costos de alojamiento, instalación y soporte.</p>
+        <div class="g-duelo">
+          <span class="g-op"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-codigo"/></svg>Libertad de código</span>
+          <span class="o">o</span>
+          <span class="g-op nube"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-nube"/></svg>Comodidad de la nube</span>
+        </div>
+      </div>
+
+      <a class="btn-hero" href="#que-es">Conoce más <span class="flecha" aria-hidden="true">&rarr;</span></a>
+    </div>
+    <div class="laptop-zona">
+      <div class="laptop">
+        <span class="chispas l" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="pantalla"><div class="vidrio"><img src="logochamilo.png" alt="Logo de Chamilo: un camaleón sobre un libro abierto"></div></div>
+        <div class="base"></div>
+      </div>
+    </div>
+  </div>
+  <svg class="ola" viewBox="0 0 1440 230" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,110 C140,90 300,130 470,175 C560,200 640,215 720,230 L0,230 Z" fill="#bcd4f5"/>
+    <path d="M0,170 C160,150 360,185 560,212 C700,230 760,230 820,230 L0,230 Z" fill="#14305c"/>
+    <path d="M760,230 C960,195 1180,120 1440,50 L1440,125 C1300,150 1150,190 1000,230 Z" fill="#ff7a1a"/>
+    <path d="M820,230 C1000,215 1160,150 1300,130 C1360,122 1410,125 1440,132 L1440,230 Z" fill="#14305c"/>
+  </svg>
+</header>
+
+<!-- 1. Nombre y descripción -->
+<section id="que-es" class="alt">
+  <div class="wrap">
+    <h2 class="titulo">Nombre y descripción general</h2>
+    <p class="lead">Chamilo es un sistema de gestión del aprendizaje (LMS) que permite a docentes e instituciones educativas crear entornos virtuales para desarrollar procesos de enseñanza y aprendizaje. A través de esta plataforma se pueden organizar contenidos educativos, compartir materiales, proponer actividades, realizar evaluaciones y dar seguimiento al progreso de los estudiantes <span class="cita">(Chamilo, s. f.)</span>.</p>
+    <div class="ficha">
+      <div><b>Nombre</b><span>Chamilo LMS</span></div>
+      <div><b>Tipo</b><span>LMS de código abierto</span></div>
+      <div><b>Página oficial</b><span><a href="https://campus.chamilo.net/" target="_blank" rel="noopener">campus.chamilo.net</a></span></div>
+    </div>
+    <a class="btn-link" href="https://campus.chamilo.net/" target="_blank" rel="noopener">Visitar Chamilo</a>
+  </div>
+</section>
+
+<!-- 2. Tipo de LMS y finalidad -->
+<section id="tipo">
+  <div class="wrap">
+    <h2 class="titulo">Tipo de LMS y finalidad educativa</h2>
+    <p class="lead">Chamilo se clasifica como un LMS de código abierto (open source) que facilita la creación de materiales educativos, la interacción y el seguimiento del aprendizaje. Según Quiñónez Barrezueta et al. <span class="cita">(2025)</span>, esta plataforma permite desarrollar el aprendizaje basado en problemas, promoviendo la participación activa, el trabajo colaborativo y el aprendizaje significativo mediante recursos y actividades digitales.</p>
+    <h3 class="sub-t">Escenarios educativos donde se puede usar</h3>
+    <div class="grid">
+      <div class="card"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-escuela"/></svg><h3>Educación escolar</h3><p>Apoyo a las actividades de enseñanza y aprendizaje.</p></div>
+      <div class="card"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-univ"/></svg><h3>Educación superior</h3><p>Gestión de asignaturas, cursos y actividades académicas.</p></div>
+      <div class="card"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-virtual"/></svg><h3>Educación virtual</h3><p>Desarrollo de procesos formativos completamente en línea.</p></div>
+      <div class="card"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-maletin"/></svg><h3>Capacitación profesional</h3><p>Formación de trabajadores y desarrollo de competencias.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Licenciamiento -->
+<section id="licencia" class="alt">
+  <div class="wrap">
+    <h2 class="titulo">Tipo de licenciamiento</h2>
+    <p class="lead">Chamilo es un software libre y de código abierto, distribuido bajo la licencia GNU/GPL versión 3 o superior. Esto significa que puede utilizarse, descargarse, instalarse, estudiarse y modificarse libremente, respetando las condiciones establecidas por dicha licencia <span class="cita">(Chamilo, s. f.)</span>.</p>
+    <div class="gpl">
+      <strong>GNU/GPL v3+</strong>
+      <span>Software libre: se puede usar, estudiar y modificar respetando las condiciones de la licencia.</span>
+    </div>
+    <h3 class="sub-t">Modalidades de uso</h3>
+    <div class="grid">
+      <div class="card"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-regalo"/></svg><h3>Gratuito</h3><p>El software se puede descargar y utilizar sin pagar una licencia.</p></div>
+      <div class="card"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-codigo"/></svg><h3>Código abierto</h3><p>Permite acceder al código fuente y realizar modificaciones.</p></div>
+      <div class="card"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-nube"/></svg><h3>Servicios de pago</h3><p>Pueden existir costos adicionales por alojamiento web, instalación, configuración, mantenimiento y soporte técnico.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Funciones (con todos los iconos) -->
+<section id="funciones">
+  <div class="wrap">
+    <h2 class="titulo">Principales características y funcionalidades</h2>
+    <p class="lead">Chamilo cuenta con diferentes herramientas que permiten organizar y desarrollar actividades educativas dentro de un entorno virtual. Entre sus principales características se encuentran:</p>
+    <div class="tabla-wrap">
+      <table class="tabla reveal">
+        <thead><tr><th>Característica</th><th>Funcionalidad</th></tr></thead>
+        <tbody>
+          <tr style="--i:0"><td class="con-img"><img class="ti" src="Cursos%20y%20lecciones.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Creación de cursos</td><td>Permite crear, organizar y administrar cursos virtuales.</td></tr>
+          <tr style="--i:1"><td class="con-img"><img class="ti" src="Gesti%C3%B3n%20de%20documentos.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Gestión de documentos</td><td>Facilita subir, almacenar y compartir archivos educativos.</td></tr>
+          <tr style="--i:2"><td class="con-img"><img class="ti" src="Evaluaciones.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Evaluaciones</td><td>Permite elaborar cuestionarios, pruebas y actividades evaluativas.</td></tr>
+          <tr style="--i:3"><td class="con-img"><img class="ti" src="Cursos%20y%20lecciones.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Rutas de aprendizaje</td><td>Organiza los contenidos y actividades siguiendo una secuencia de aprendizaje.</td></tr>
+          <tr style="--i:4"><td class="con-img"><img class="ti" src="Foros.png" alt="" onerror="this.onerror=null;this.src='Comunicaci%C3%B3n.png'">Foros</td><td>Facilita la comunicación y el intercambio de opiniones entre participantes.</td></tr>
+          <tr style="--i:5"><td class="con-img"><img class="ti" src="Comunicaci%C3%B3n.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Chat</td><td>Permite mantener conversaciones entre docentes y estudiantes.</td></tr>
+          <tr style="--i:6"><td class="con-img"><img class="ti" src="Tareas.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Tareas</td><td>Posibilita asignar actividades y recibir trabajos de los estudiantes.</td></tr>
+          <tr style="--i:7"><td class="con-img"><img class="ti" src="Seguimiento.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Seguimiento académico</td><td>Permite consultar el progreso y los resultados de los participantes.</td></tr>
+          <tr style="--i:8"><td class="con-img"><img class="ti" src="Grupos%20de%20trabajo.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Grupos de trabajo</td><td>Facilita la organización de estudiantes para realizar actividades colaborativas.</td></tr>
+          <tr style="--i:9"><td class="con-img"><img class="ti" src="Calendario.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Calendario</td><td>Permite organizar eventos, actividades y fechas importantes.</td></tr>
+          <tr style="--i:10"><td class="con-img"><img class="ti" src="Encuestas.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Encuestas</td><td>Facilita recopilar opiniones y respuestas de los participantes.</td></tr>
+          <tr style="--i:11"><td class="con-img"><img class="ti" src="Compatibilidad%20SCORM.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Compatibilidad SCORM</td><td>Permite incorporar contenidos interactivos creados en formato SCORM.</td></tr>
+          <tr style="--i:12"><td class="con-img"><img class="ti" src="Certificados%20y%20videoconferencia.png" alt="" onerror="this.parentNode.classList.remove('con-img');this.remove()">Certificados y videoconferencia</td><td>Facilita emitir certificados y realizar clases en línea por videoconferencia.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="pros-contras" class="alt">
+  <div class="wrap">
+    <h2 class="titulo">Ventajas y desventajas</h2>
+    <div class="tabla-wrap">
+      <table class="tabla pc reveal">
+        <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+        <tbody>
+          <tr style="--i:0"><td><span class="et">Ventaja</span>Es gratuito y de código abierto.</td><td><span class="et">Desventaja</span>Requiere alojamiento web o un servidor para su instalación propia.</td></tr>
+          <tr style="--i:1"><td><span class="et">Ventaja</span>Presenta una interfaz sencilla e intuitiva.</td><td><span class="et">Desventaja</span>Puede necesitar conocimientos técnicos para su instalación y mantenimiento.</td></tr>
+          <tr style="--i:2"><td><span class="et">Ventaja</span>Permite organizar cursos y contenidos educativos.</td><td><span class="et">Desventaja</span>Algunas configuraciones y personalizaciones requieren asistencia técnica.</td></tr>
+          <tr style="--i:3"><td><span class="et">Ventaja</span>Dispone de herramientas para evaluar y realizar seguimiento académico.</td><td><span class="et">Desventaja</span>Su funcionamiento depende de la capacidad del servidor y de la conexión a Internet.</td></tr>
+          <tr style="--i:4"><td><span class="et">Ventaja</span>Facilita la comunicación mediante foros, chats y grupos de trabajo.</td><td><span class="et">Desventaja</span>Su documentación y comunidad de soporte pueden ser menos amplias que las de otros LMS.</td></tr>
+          <tr style="--i:5"><td><span class="et">Ventaja</span>Puede utilizarse en procesos educativos presenciales, virtuales y semipresenciales.</td><td><span class="et">Desventaja</span>Requiere capacitación inicial para aprovechar adecuadamente todas sus herramientas.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="caso">
+  <div class="wrap">
+    <h2 class="titulo">Caso de estudio</h2>
+    <div class="caso">
+      <span class="etiqueta">Caso hipotético basado en un contexto educativo real</span>
+      <h3>Implementación de Chamilo LMS en la Unidad Educativa Particular Santa Mariana de Jesús</h3>
+    </div>
+    <div class="linea" id="linea">
+    <article class="bloque">
+      <span class="num" aria-hidden="true">1</span>
+      <div class="bcard">
+        <span class="bl">Bloque 1</span>
+        <h3>Contexto educativo</h3>
+        <p>La Unidad Educativa Particular Santa Mariana de Jesús, ubicada en la ciudad de Loja, busca fortalecer el uso de herramientas tecnológicas para complementar las actividades de enseñanza y aprendizaje.</p>
+        <div class="pregunta"><b>Pregunta</b><p>¿Por qué sería importante que la institución incorpore un entorno virtual de aprendizaje?</p></div>
+      </div>
+    </article>
+
+    <article class="bloque">
+      <span class="num" aria-hidden="true">2</span>
+      <div class="bcard">
+        <span class="bl">Bloque 2</span>
+        <h3>Problemática identificada</h3>
+        <p>Actualmente, los docentes utilizan diferentes recursos digitales para compartir documentos, enviar tareas y desarrollar actividades. Sin embargo, al no contar con un entorno virtual centralizado, se presentan dificultades para organizar los materiales, mantener la comunicación y realizar el seguimiento de las actividades de los estudiantes.</p>
+        <div class="pregunta"><b>Pregunta</b><p>¿Qué dificultades genera no contar con una plataforma que centralice las actividades académicas?</p></div>
+      </div>
+    </article>
+
+    <article class="bloque">
+      <span class="num" aria-hidden="true">3</span>
+      <div class="bcard">
+        <span class="bl">Bloque 3</span>
+        <h3>Propuesta de solución</h3>
+        <p>Ante esta situación, se plantea implementar Chamilo LMS como un espacio virtual que permita organizar los cursos, compartir recursos educativos, asignar tareas, realizar evaluaciones y dar seguimiento al progreso de los estudiantes.</p>
+        <div class="pregunta"><b>Pregunta</b><p>¿Qué herramientas de Chamilo podrían ayudar a solucionar las dificultades identificadas?</p></div>
+      </div>
+    </article>
+
+    <article class="bloque">
+      <span class="num" aria-hidden="true">4</span>
+      <div class="bcard">
+        <span class="bl">Bloque 4</span>
+        <h3>Aspectos por considerar</h3>
+        <p>Para su implementación, la institución deberá considerar la disponibilidad de conexión a Internet, los dispositivos tecnológicos, la capacitación de los docentes y los recursos necesarios para el alojamiento y mantenimiento de la plataforma.</p>
+        <div class="pregunta"><b>Pregunta</b><p>¿Qué recursos y condiciones necesitaría la institución para implementar Chamilo adecuadamente?</p></div>
+      </div>
+    </article>
+
+    <article class="bloque">
+      <span class="num" aria-hidden="true">5</span>
+      <div class="bcard">
+        <span class="bl">Bloque 5</span>
+        <h3>Análisis y toma de decisiones</h3>
+        <div class="pregunta grande"><b>Pregunta</b><p>¿Consideran que Chamilo es una solución adecuada para mejorar el proceso de enseñanza y aprendizaje en esta institución? Justifiquen su respuesta considerando sus ventajas y desventajas.</p></div>
+      </div>
+    </article>
+    </div>
+  </div>
+</section>
+
+<section id="referencias" class="alt">
+  <div class="wrap">
+    <h2 class="titulo">Referencias bibliográficas</h2>
+    <ol class="refs">
+      <li>Chamilo. (s.f.). <i>Documentación oficial de Chamilo</i>. <a href="https://campus.chamilo.net/" target="_blank" rel="noopener">https://campus.chamilo.net/</a></li>
+      <li>Quiñónez Barrezueta, J. E., Pozo Hurtado, E. O., Jácome Encalada, S. H., y Reigosa Lara, A. (2025). Aprendizaje basado en problemas para el proceso de enseñanza mediante la plataforma Chamilo. <i>Ciencia Digital, 9</i>(2), 111–127. <a href="https://doi.org/10.33262/cienciadigital.v9i2.3483" target="_blank" rel="noopener">https://doi.org/10.33262/cienciadigital.v9i2.3483</a></li>
+    </ol>
+  </div>
+</section>
+
+<footer>Chamilo LMS · Trabajo grupal</footer>
+
+<script>
+  // Modo claro / oscuro
+  const btn = document.getElementById('tema');
+  btn.addEventListener('click', () => {
+    const oscuro = document.documentElement.dataset.theme === 'dark';
+    document.documentElement.dataset.theme = oscuro ? '' : 'dark';
+    btn.textContent = oscuro ? '🌙' : '☀️';
+  });
+
+  // Menú en celular
+  const menu = document.getElementById('menu');
+  document.getElementById('burger').addEventListener('click', () => menu.classList.toggle('abierto'));
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.remove('abierto')));
+
+  // Fondo del menú al bajar
+  const barra = document.getElementById('barra');
+  const alScroll = () => barra.classList.toggle('scrolled', window.scrollY > 20);
+  window.addEventListener('scroll', alScroll); alScroll();
+
+  // Las tablas y bloques se animan al llegar a ellos
+  const tablas = document.querySelectorAll('.reveal, .bloque');
+  if ('IntersectionObserver' in window) {
+    const ob = new IntersectionObserver((es, o) => {
+      es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); o.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    tablas.forEach(t => ob.observe(t));
+  } else {
+    tablas.forEach(t => t.classList.add('vis'));
+  }
+
+  // La línea del caso se rellena al bajar
+  const linea = document.getElementById('linea');
+  const progreso = () => {
+    const r = linea.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, (window.innerHeight * 0.6 - r.top) / r.height));
+    linea.style.setProperty('--p', p);
+  };
+  window.addEventListener('scroll', progreso); window.addEventListener('resize', progreso); progreso();
+
+  // Marca en el menú la sección que se está viendo
+  const links = document.querySelectorAll('#menu a');
+  const obs = new IntersectionObserver(entradas => {
+    entradas.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.toggle('activo', a.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('header[id], section[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
