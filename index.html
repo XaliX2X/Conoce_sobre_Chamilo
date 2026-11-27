@@ -274,6 +274,8 @@
   .bloque.vis .pregunta::before { animation: barra .8s ease .4s backwards; }
   .pregunta b { display: block; font-family: var(--titulo); font-size: 1rem; font-weight: 600; color: var(--orange); }
   .pregunta p { font-weight: 700; color: var(--ink); }
+  /* Mismo tamaño de letra para el texto y las preguntas de los 5 bloques */
+  .bcard > p, .pregunta p { font-size: 1.15rem; line-height: 1.6; }
   @keyframes pop { from { transform: scale(0); } }
   @keyframes bEntra { from { opacity: 0; transform: translateX(50px); } }
   @keyframes barra { from { transform: scaleY(0); } }
@@ -322,6 +324,7 @@
     .linea::before, .linea::after { left: 17px; }
     .num { left: -3.2rem; width: 40px; height: 40px; font-size: 1.1rem; border-width: 3px; }
     .bcard { padding: 1.3rem; }
+    .bcard > p, .pregunta p { font-size: 1.05rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
