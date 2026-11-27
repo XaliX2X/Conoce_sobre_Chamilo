@@ -105,21 +105,6 @@
   .hero .barra { width: 85px; height: 6px; background: var(--orange); border-radius: 99px; margin: 1.5rem 0; }
   .hero p.desc { font-size: 1.3rem; max-width: 30ch; color: var(--text); line-height: 1.45; }
 
-  /* Pregunta guía dentro de la portada */
-  .guia-hero {
-    margin-top: 1.8rem; max-width: 560px;
-    background: var(--card); border-radius: 24px; padding: 1.2rem 1.5rem 1.3rem;
-    box-shadow: var(--shadow); border-left: 7px solid var(--orange);
-  }
-  .g-et { display: inline-block; background: var(--orange); color: #fff; font-family: var(--titulo); font-weight: 600; font-size: .85rem; padding: .15rem .9rem; border-radius: 999px; }
-  .g-t { font-family: var(--titulo); font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 600; line-height: 1.2; color: var(--ink); margin: .55rem 0 .4rem; }
-  .g-txt { font-size: .98rem; font-weight: 600; color: var(--muted); line-height: 1.45; }
-  .g-duelo { display: flex; align-items: center; flex-wrap: wrap; gap: .7rem; margin-top: .9rem; }
-  .g-op { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--titulo); font-weight: 600; font-size: 1.02rem; color: var(--ink); padding: .4rem 1rem .4rem .7rem; border-radius: 999px; background: color-mix(in srgb, var(--blue) 12%, var(--card)); border-bottom: 4px solid var(--blue); }
-  .g-op.nube { background: color-mix(in srgb, var(--orange) 12%, var(--card)); border-bottom-color: var(--orange); }
-  .g-op svg { width: 28px; height: 28px; }
-  .g-duelo .o { font-family: var(--titulo); font-size: 1.3rem; font-weight: 700; color: var(--orange); }
-
   .btn-hero {
     display: inline-flex; align-items: center; gap: 1.2rem; margin-top: 2.2rem;
     background: var(--navy); color: #fff; text-decoration: none; font-family: var(--titulo); font-weight: 600; font-size: 1.4rem;
@@ -374,7 +359,7 @@
   <button id="burger" type="button" aria-label="Abrir menú">☰</button>
 </nav>
 
-<!-- ===== PORTADA: título + pregunta guía + datos rápidos ===== -->
+<!-- ===== PORTADA ===== -->
 <header class="hero" id="inicio">
   <div class="blob arriba-der"></div>
   <div class="blob arriba-izq"></div>
@@ -390,17 +375,6 @@
       <h2 class="sub">Tu plataforma de <b>aprendizaje</b> en línea</h2>
       <div class="barra"></div>
       <p class="desc">Un LMS flexible y de código abierto para crear cursos y compartir conocimiento.</p>
-
-      <div class="guia-hero">
-        <span class="g-et">Pregunta guía</span>
-        <h2 class="g-t">¿Libertad de código o comodidad de la nube?</h2>
-        <p class="g-txt">Se descarga y usa sin pagar licencia, pero ponerlo a funcionar puede implicar costos de alojamiento, instalación y soporte.</p>
-        <div class="g-duelo">
-          <span class="g-op"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-codigo"/></svg>Libertad de código</span>
-          <span class="o">o</span>
-          <span class="g-op nube"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-nube"/></svg>Comodidad de la nube</span>
-        </div>
-      </div>
 
       <a class="btn-hero" href="#que-es">Conoce más <span class="flecha" aria-hidden="true">&rarr;</span></a>
     </div>
@@ -537,7 +511,6 @@
       <div class="bcard">
         <span class="bl">Bloque 2</span>
         <h3>Problemática identificada</h3>
-        <p>Actualmente, los docentes utilizan diferentes recursos digitales para compartir documentos, enviar tareas y desarrollar actividades. Sin embargo, al no contar con un entorno virtual centralizado, se presentan dificultades para organizar los materiales, mantener la comunicación y realizar el seguimiento de las actividades de los estudiantes.</p>
         <div class="pregunta"><b>Pregunta</b><p>¿Qué dificultades genera no contar con una plataforma que centralice las actividades académicas?</p></div>
       </div>
     </article>
@@ -547,7 +520,6 @@
       <div class="bcard">
         <span class="bl">Bloque 3</span>
         <h3>Propuesta de solución</h3>
-        <p>Ante esta situación, se plantea implementar Chamilo LMS como un espacio virtual que permita organizar los cursos, compartir recursos educativos, asignar tareas, realizar evaluaciones y dar seguimiento al progreso de los estudiantes.</p>
         <div class="pregunta"><b>Pregunta</b><p>¿Qué herramientas de Chamilo podrían ayudar a solucionar las dificultades identificadas?</p></div>
       </div>
     </article>
@@ -557,7 +529,6 @@
       <div class="bcard">
         <span class="bl">Bloque 4</span>
         <h3>Aspectos por considerar</h3>
-        <p>Para su implementación, la institución deberá considerar la disponibilidad de conexión a Internet, los dispositivos tecnológicos, la capacitación de los docentes y los recursos necesarios para el alojamiento y mantenimiento de la plataforma.</p>
         <div class="pregunta"><b>Pregunta</b><p>¿Qué recursos y condiciones necesitaría la institución para implementar Chamilo adecuadamente?</p></div>
       </div>
     </article>
